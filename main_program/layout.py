@@ -224,3 +224,54 @@ class Layout(QWidget):
                 'predictButton': predictButton,
                 'accountButton': accountButton
         }
+
+    def createAccountLayout(self):
+        # Main layout
+        mainLayout = QVBoxLayout()
+
+        # Create a horizontal layout with spacers to center the widgets horizontally
+        hLayout = QHBoxLayout()
+        leftSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        rightSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        # Add your widgets here
+        widgetContainer = QVBoxLayout()
+
+        widgetContainer.addWidget(self.titleLabel)
+
+        topSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        widgetContainer.addItem(topSpacer)
+
+        # Add widgets for user information
+        loginLabel = QLabel('Login: ' + 'login')
+        emailLabel = QLabel('Email: ' + 'login')
+        ageLabel = QLabel('Age: ' + 'age')
+
+        # Add widgets to layout
+        widgetContainer.addWidget(loginLabel)
+        widgetContainer.addWidget(emailLabel)
+        widgetContainer.addWidget(ageLabel)
+
+        # Change password button
+        changePasswordButton = QPushButton('Change Password')
+        widgetContainer.addWidget(changePasswordButton)
+
+        # Placeholder for previous prediction tests
+        previousPredictionsLabel = QLabel('All previous prediction tests will be listed here')
+        widgetContainer.addWidget(previousPredictionsLabel)
+
+        # Add the spacers and the widget container to the horizontal layout
+        hLayout.addItem(leftSpacer)
+        hLayout.addLayout(widgetContainer)
+        hLayout.addItem(rightSpacer)
+
+        # Create a vertical layout with spacers to center the widgets vertically
+        topSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        bottomSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        # Add the spacers and the horizontal layout to the main layout
+        mainLayout.addItem(topSpacer)
+        mainLayout.addLayout(hLayout)
+        mainLayout.addItem(bottomSpacer)
+
+        return mainLayout

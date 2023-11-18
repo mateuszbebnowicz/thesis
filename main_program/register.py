@@ -9,12 +9,13 @@ class RegistrationWindow(QWidget):
     def __init__(self, switchToLoginCallback):
         super().__init__()
         self.switchToLoginCallback = switchToLoginCallback
+        self.layoutCreator = Layout()
         self.initUI()
 
     def initUI(self):
         self.setWindowTitle("Register")
-        self.Layout = Layout()
-        layoutDict = self.Layout.createRegisterLayout()
+
+        layoutDict = self.layoutCreator.createRegisterLayout()
 
         self.layout = layoutDict['layout']
         self.loginButton = layoutDict['loginButton']

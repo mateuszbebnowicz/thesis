@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QStackedWidget
 from login import LoginWindow
 from register import RegistrationWindow
 from prediction import PredictionWindow
+from account import AccountWindow
 
 
 class MainApp(QMainWindow):
@@ -20,14 +21,16 @@ class MainApp(QMainWindow):
         self.setCentralWidget(self.stackedWidget)
 
         # Create instances of the login and registration forms
-        self.loginWindow = LoginWindow(self.showRegistrationForm, self.showPredictionForm)  # Pass the method, not the instance
+        self.loginWindow = LoginWindow(self.showRegistrationForm, self.showPredictionForm)
         self.registrationWindow = RegistrationWindow(self.showLoginForm)
-        self.predictionWindow = PredictionWindow()
+        self.predictionWindow = PredictionWindow(self.showAccountForm)
+        self.accountWindow = AccountWindow()
 
         # Add the windows to the stacked widget
         self.stackedWidget.addWidget(self.loginWindow)
         self.stackedWidget.addWidget(self.registrationWindow)
         self.stackedWidget.addWidget(self.predictionWindow)
+        self.stackedWidget.addWidget(self.accountWindow)
 
         # Show the login form first
         self.stackedWidget.setCurrentWidget(self.loginWindow)
@@ -40,6 +43,9 @@ class MainApp(QMainWindow):
 
     def showPredictionForm(self):
         self.stackedWidget.setCurrentWidget(self.predictionWindow)
+
+    def showAccountForm(self):
+        self.stackedWidget.setCurrentWidget(self.accountWindow)
 
 
 def main():

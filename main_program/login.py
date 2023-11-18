@@ -7,12 +7,12 @@ class LoginWindow(QWidget):
         super().__init__()
         self.switchToRegisterCallback = switchToRegisterCallback
         self.switchToPredictionCallback = switchToPredictionCallback
+        self.layoutCreator = Layout()
         self.initUI()
 
     def initUI(self):
         self.setWindowTitle("Login")
-        self.Layout = Layout()
-        layoutDict = self.Layout.createLoginLayout()
+        layoutDict = self.layoutCreator.createLoginLayout()
 
         self.layout = layoutDict['layout']
         self.loginButton = layoutDict['loginButton']
