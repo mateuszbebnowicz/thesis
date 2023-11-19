@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QMessageBox
 from layout import Layout
+from dataBase.dataBaseAPI import loginAttempt
 
 
 class LoginWindow(QWidget):
@@ -29,11 +30,10 @@ class LoginWindow(QWidget):
     def login(self):
         username = self.usernameEdit.text()
         password = self.passwordEdit.text()
-        if self.credentialsAreValid(username, password):  # Replace with your actual validation logic
+
+        userID = loginAttempt(username, password)
+        if userID is not None:
+            self.userID = userID
             self.switchToPredictionCallback()
         else:
             QMessageBox.warning(self, 'Login Failed', 'Invalid username or password.')
-        # You should add the logic to verify credentials here
-
-    def credentialsAreValid(self, username, password):
-        return True

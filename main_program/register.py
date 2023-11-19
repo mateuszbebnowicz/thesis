@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import (
     QMessageBox,
 )
 from layout import Layout
+from dataBase.dataBaseAPI import createUser, userExists
 
 
 class RegistrationWindow(QWidget):
@@ -32,13 +33,25 @@ class RegistrationWindow(QWidget):
         self.registerButton.clicked.connect(self.register)
 
     def register(self):
-        # Implement registration logic here
-        # email = self.emailEdit.text()
-        # age = self.ageEdit.text()
-        # username = self.usernameEdit.text()
-        # password = self.passwordEdit.text()
-        # passwordRepeat = self.passwordRepeatEdit.text()
+        email = self.emailEdit.text()
+        age = self.ageEdit.text()
+        username = self.usernameEdit.text()
+        password = self.passwordEdit.text()
+        passwordRepeat = self.passwordRepeatEdit.text()
 
-        # You should add validation logic here
+        # Basic validation
+        if not (email and age and username and password):
+            QMessageBox.warning(self, "Register", "All fields are required.")
+            return
 
-        QMessageBox.information(self, "Register", "Registration Attempted")
+        if password != passwordRepeat:
+            QMessageBox.warning(self, "Register", "Passwords do not match.")
+            return
+
+        # Check if the user already exists
+        if userExists(username, email):
+            QMessageBox.warning(self, "Register", "User with the same username or email already registered.")
+            return
+        if (createUser(username, password, email, age)):
+            QMessageBox.information(self, "Register", "Registration successful.")
+            self.switchToLoginCallback()

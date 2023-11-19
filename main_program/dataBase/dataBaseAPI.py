@@ -8,23 +8,28 @@ def dbConnection():
 def createUser(username, passwordHash, email, age):
     conn = dbConnection()
     cursor = conn.cursor()
-
+    print(f"User created Username: {username}, Email: {email}")
     cursor.execute("INSERT INTO Users (Username, PasswordHash, Email, Age) VALUES (?, ?, ?, ?)",
                    (username, passwordHash, email, age))
 
     conn.commit()
     conn.close()
+    return True
 
 
 def loginAttempt(username, passwordHash):
     conn = dbConnection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM Users WHERE Username = ? AND PasswordHash = ?", (username, passwordHash))
-    user = cursor.fetchone()
+    cursor.execute("SELECT UserID FROM Users WHERE Username = ? AND PasswordHash = ?", (username, passwordHash))
+    result = cursor.fetchone()
 
     conn.close()
-    return user is not None
+    if result:
+        userID, = result
+        return userID
+    else:
+        return None
 
 
 def storePrediction(userId, dataInput, predictionResult):
@@ -58,3 +63,14 @@ def getPastResults(userId):
 
     conn.close()
     return predictions
+
+
+def userExists(username, email):
+    conn = dbConnection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM Users WHERE Username = ? OR Email = ?", (username, email))
+    user = cursor.fetchone()
+
+    conn.close()
+    return user is not None
