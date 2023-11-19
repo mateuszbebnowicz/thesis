@@ -185,8 +185,11 @@ class layoutCreator(QWidget):
         widgetContainer.addWidget(predictionTitleLabel)
 
         # Input fields
+        inputFieldsName = ['gender', 'age', 'hypertension', 'heart disease,smoking history', 'bmi', 'HbA1c level', 'blood glucose level']
         inputFields = []
-        for i in range(5):  # Create 5 input fields
+        for i in range(len(inputFieldsName)):
+            inputName = QLabel(inputFieldsName[i])
+            widgetContainer.addWidget(inputName)
             lineEdit = QLineEdit(self)
             inputFields.append(lineEdit)
             widgetContainer.addWidget(lineEdit)
@@ -273,7 +276,7 @@ class layoutCreator(QWidget):
         widgetContainer.addWidget(previousPredictionsLabel)
 
         # Top right buttons
-        predictonWindowButton = QPushButton('Your Account', self)
+        predictonWindowButton = QPushButton('Diabetes Predictor', self)
         logoutButton = QPushButton('Logout', self)
 
         predictonWindowButton.setFont(QFont('Arial', 9))
