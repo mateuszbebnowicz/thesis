@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import (
     QWidget,
     QMessageBox,
 )
-from layout import Layout
+from layout import layoutCreator
 from dataBase.dataBaseAPI import createUser, userExists
 
 
@@ -10,7 +10,7 @@ class RegistrationWindow(QWidget):
     def __init__(self, switchToLoginCallback):
         super().__init__()
         self.switchToLoginCallback = switchToLoginCallback
-        self.layoutCreator = Layout()
+        self.layoutCreator = layoutCreator()
         self.initUI()
 
     def initUI(self):

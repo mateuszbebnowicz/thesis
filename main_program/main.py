@@ -19,33 +19,43 @@ class MainApp(QMainWindow):
         # Create the stacked widget
         self.stackedWidget = QStackedWidget(self)
         self.setCentralWidget(self.stackedWidget)
-
-        # Create instances of the login and registration forms
-        self.loginWindow = LoginWindow(self.showRegistrationForm, self.showPredictionForm)
-        self.registrationWindow = RegistrationWindow(self.showLoginForm)
-        self.predictionWindow = PredictionWindow(self.showAccountForm)
-        self.accountWindow = AccountWindow()
-
-        # Add the windows to the stacked widget
+        self.loginWindow = LoginWindow(self.createRegistrationForm, self.createPredictionForm)
         self.stackedWidget.addWidget(self.loginWindow)
-        self.stackedWidget.addWidget(self.registrationWindow)
-        self.stackedWidget.addWidget(self.predictionWindow)
-        self.stackedWidget.addWidget(self.accountWindow)
-
-        # Show the login form first
         self.stackedWidget.setCurrentWidget(self.loginWindow)
 
-    def showRegistrationForm(self):
-        self.stackedWidget.setCurrentWidget(self.registrationWindow)
+    def createLoginForm(self):
+        loginWindow = LoginWindow(self.createRegistrationForm, self.createPredictionForm)
+        self.stackedWidget.addWidget(loginWindow)
+        self.stackedWidget.setCurrentWidget(loginWindow)
+        self.removeAllExcept(loginWindow)
 
-    def showLoginForm(self):
-        self.stackedWidget.setCurrentWidget(self.loginWindow)
+    def createRegistrationForm(self):
+        registrationWindow = RegistrationWindow(self.createLoginForm)
+        self.stackedWidget.addWidget(registrationWindow)
+        self.stackedWidget.setCurrentWidget(registrationWindow)
+        self.removeAllExcept(registrationWindow)
 
-    def showPredictionForm(self):
-        self.stackedWidget.setCurrentWidget(self.predictionWindow)
+    def createPredictionForm(self):
+        predictionWindow = PredictionWindow(self.showAccountForm, self.createLoginForm)
+        self.stackedWidget.addWidget(predictionWindow)
+        self.stackedWidget.setCurrentWidget(predictionWindow)
+        self.removeAllExcept(predictionWindow)
 
     def showAccountForm(self):
-        self.stackedWidget.setCurrentWidget(self.accountWindow)
+        accountWindow = AccountWindow(self.createLoginForm, self.createPredictionForm)
+        self.stackedWidget.addWidget(accountWindow)
+        self.stackedWidget.setCurrentWidget(accountWindow)
+        self.removeAllExcept(accountWindow)
+
+    def removeAllExcept(self, form):
+        # Loop through all widgets in the stacked widget
+        for i in range(self.stackedWidget.count()):
+            widget = self.stackedWidget.widget(i)
+
+            # Check if the widget is not the loginWindow
+            if widget != form:
+                # Remove the widget
+                self.stackedWidget.removeWidget(widget)
 
 
 def main():

@@ -3,7 +3,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QLineEdit, QPushButton, QFrame, QSpacerItem, QSizePolicy, QVBoxLayout
 
 
-class Layout(QWidget):
+class layoutCreator(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -195,13 +195,24 @@ class Layout(QWidget):
         predictButton = QPushButton('Predict', self)
         widgetContainer.addWidget(predictButton)
 
-        # Account button - positioned top right
+        # Top right buttons
         accountButton = QPushButton('Your Account', self)
-        accountButton.setFont(QFont('Arial', 9))
+        logoutButton = QPushButton('Logout', self)
 
-        # Horizontal layout for the account button
-        accountLayout = QHBoxLayout()
-        accountLayout.addWidget(accountButton, 0, Qt.AlignRight | Qt.AlignTop)
+        accountButton.setFont(QFont('Arial', 9))
+        logoutButton.setFont(QFont('Arial', 9))
+
+        accountButton.setFixedSize(100, 30)  # width, height
+        logoutButton.setFixedSize(100, 30)
+
+        # Horizontal layout buttons layout
+        buttonsLayout = QHBoxLayout()
+        buttonsLayout.addWidget(accountButton)
+        buttonsLayout.addWidget(logoutButton)
+
+        buttonSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        buttonsLayout.addItem(buttonSpacer)
+        buttonsLayout.setAlignment(Qt.AlignTop | Qt.AlignRight)
 
         # Add the spacers and the widget container to the horizontal layout
         hLayout.addItem(leftSpacer)
@@ -214,7 +225,7 @@ class Layout(QWidget):
 
         # Add the spacers and the horizontal layout to the main layout
         mainLayout.addItem(topSpacer)
-        mainLayout.addLayout(accountLayout)
+        mainLayout.addLayout(buttonsLayout)
         mainLayout.addLayout(hLayout)
         mainLayout.addItem(bottomSpacer)
 
@@ -222,7 +233,8 @@ class Layout(QWidget):
                 'layout': mainLayout,
                 'inputFields': inputFields,
                 'predictButton': predictButton,
-                'accountButton': accountButton
+                'accountButton': accountButton,
+                'logoutButton': logoutButton
         }
 
     def createAccountLayout(self):
@@ -260,6 +272,25 @@ class Layout(QWidget):
         previousPredictionsLabel = QLabel('All previous prediction tests will be listed here')
         widgetContainer.addWidget(previousPredictionsLabel)
 
+        # Top right buttons
+        predictonWindowButton = QPushButton('Your Account', self)
+        logoutButton = QPushButton('Logout', self)
+
+        predictonWindowButton.setFont(QFont('Arial', 9))
+        logoutButton.setFont(QFont('Arial', 9))
+
+        predictonWindowButton.setFixedSize(100, 30)  # width, height
+        logoutButton.setFixedSize(100, 30)
+
+        # Horizontal layout buttons layout
+        buttonsLayout = QHBoxLayout()
+        buttonsLayout.addWidget(predictonWindowButton)
+        buttonsLayout.addWidget(logoutButton)
+
+        buttonSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        buttonsLayout.addItem(buttonSpacer)
+        buttonsLayout.setAlignment(Qt.AlignTop | Qt.AlignRight)
+
         # Add the spacers and the widget container to the horizontal layout
         hLayout.addItem(leftSpacer)
         hLayout.addLayout(widgetContainer)
@@ -271,7 +302,12 @@ class Layout(QWidget):
 
         # Add the spacers and the horizontal layout to the main layout
         mainLayout.addItem(topSpacer)
+        mainLayout.addLayout(buttonsLayout)
         mainLayout.addLayout(hLayout)
         mainLayout.addItem(bottomSpacer)
 
-        return mainLayout
+        return {
+                'layout': mainLayout,
+                'predictionWindowButton': predictonWindowButton,
+                'logoutButton': logoutButton
+        }

@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QMessageBox
-from layout import Layout
+from layout import layoutCreator
 from dataBase.dataBaseAPI import loginAttempt
 
 
@@ -8,7 +8,7 @@ class LoginWindow(QWidget):
         super().__init__()
         self.switchToRegisterCallback = switchToRegisterCallback
         self.switchToPredictionCallback = switchToPredictionCallback
-        self.layoutCreator = Layout()
+        self.layoutCreator = layoutCreator()
         self.initUI()
 
     def initUI(self):

@@ -1,12 +1,13 @@
 from PyQt5.QtWidgets import QWidget, QMessageBox
-from layout import Layout
+from layout import layoutCreator
 
 
 class PredictionWindow(QWidget):
-    def __init__(self, switchToAccountCallback):
+    def __init__(self, switchToAccountCallback, switchToLoginCallback):
         super().__init__()
         self.switchToAccountCallback = switchToAccountCallback
-        self.layoutCreator = Layout()
+        self.switchToLoginCallback = switchToLoginCallback
+        self.layoutCreator = layoutCreator()
         self.initUI()
 
     def initUI(self):
@@ -17,10 +18,12 @@ class PredictionWindow(QWidget):
         self.inputFields = layoutDict['inputFields']
         self.predictButton = layoutDict['predictButton']
         self.accountButton = layoutDict['accountButton']
+        self.logoutButton = layoutDict['logoutButton']
 
         self.setLayout(self.layout)
 
         self.accountButton.clicked.connect(self.switchToAccountCallback)
+        self.logoutButton.clicked.connect(self.switchToLoginCallback)
         self.predictButton.clicked.connect(self.predictDiabetes)
 
     def predictDiabetes(self):
