@@ -24,7 +24,6 @@ class RegistrationWindow(QWidget):
         self.usernameEdit = layoutDict['usernameEdit']
         self.passwordEdit = layoutDict['passwordEdit']
         self.emailEdit = layoutDict['emailEdit']
-        self.ageEdit = layoutDict['ageEdit']
         self.passwordRepeatEdit = layoutDict['passwordRepeatEdit']
         self.setLayout(self.layout)
 
@@ -34,13 +33,12 @@ class RegistrationWindow(QWidget):
 
     def register(self):
         email = self.emailEdit.text()
-        age = self.ageEdit.text()
         username = self.usernameEdit.text()
         password = self.passwordEdit.text()
         passwordRepeat = self.passwordRepeatEdit.text()
 
         # Basic validation
-        if not (email and age and username and password):
+        if not (email and username and password):
             QMessageBox.warning(self, "Register", "All fields are required.")
             return
 
@@ -52,6 +50,6 @@ class RegistrationWindow(QWidget):
         if userExists(username, email):
             QMessageBox.warning(self, "Register", "User with the same username or email already registered.")
             return
-        if (createUser(username, password, email, age)):
+        if (createUser(username, password, email)):
             QMessageBox.information(self, "Register", "Registration successful.")
             self.switchToLoginCallback()

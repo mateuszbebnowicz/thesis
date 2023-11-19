@@ -3,10 +3,11 @@ from layout import layoutCreator
 
 
 class PredictionWindow(QWidget):
-    def __init__(self, switchToAccountCallback, switchToLoginCallback):
+    def __init__(self, switchToAccountCallback, switchToLoginCallback, clearUser):
         super().__init__()
         self.switchToAccountCallback = switchToAccountCallback
         self.switchToLoginCallback = switchToLoginCallback
+        self.clearUser = clearUser
         self.layoutCreator = layoutCreator()
         self.initUI()
 
@@ -23,7 +24,7 @@ class PredictionWindow(QWidget):
         self.setLayout(self.layout)
 
         self.accountButton.clicked.connect(self.switchToAccountCallback)
-        self.logoutButton.clicked.connect(self.switchToLoginCallback)
+        self.logoutButton.clicked.connect(lambda: (self.clearUser(), self.switchToLoginCallback()))
         self.predictButton.clicked.connect(self.predictDiabetes)
 
     def predictDiabetes(self):

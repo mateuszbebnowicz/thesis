@@ -1,6 +1,7 @@
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QLineEdit, QPushButton, QFrame, QSpacerItem, QSizePolicy, QVBoxLayout
+from dataBase.dataBaseAPI import getUserData
 
 
 class layoutCreator(QWidget):
@@ -102,10 +103,6 @@ class layoutCreator(QWidget):
         emailEdit.setPlaceholderText("Email")
         widgetContainer.addWidget(emailEdit)
 
-        ageEdit = QLineEdit(self)
-        ageEdit.setPlaceholderText("Age")
-        widgetContainer.addWidget(ageEdit)
-
         usernameEdit = QLineEdit(self)
         usernameEdit.setPlaceholderText("Login")
         widgetContainer.addWidget(usernameEdit)
@@ -153,7 +150,6 @@ class layoutCreator(QWidget):
         return {
                 'layout': mainLayout,
                 'emailEdit': emailEdit,
-                'ageEdit': ageEdit,
                 'usernameEdit': usernameEdit,
                 'passwordEdit': passwordEdit,
                 'passwordRepeatEdit': passwordRepeatEdit,
@@ -240,7 +236,10 @@ class layoutCreator(QWidget):
                 'logoutButton': logoutButton
         }
 
-    def createAccountLayout(self):
+    def createAccountLayout(self, userId):
+        userData = getUserData(userId)
+        loginText = userData[1]
+        emailText = userData[3]
         # Main layout
         mainLayout = QVBoxLayout()
 
@@ -258,14 +257,12 @@ class layoutCreator(QWidget):
         widgetContainer.addItem(topSpacer)
 
         # Add widgets for user information
-        loginLabel = QLabel('Login: ' + 'login')
-        emailLabel = QLabel('Email: ' + 'login')
-        ageLabel = QLabel('Age: ' + 'age')
+        loginLabel = QLabel('Login: ' + loginText)
+        emailLabel = QLabel('Email: ' + emailText)
 
         # Add widgets to layout
         widgetContainer.addWidget(loginLabel)
         widgetContainer.addWidget(emailLabel)
-        widgetContainer.addWidget(ageLabel)
 
         # Change password button
         changePasswordButton = QPushButton('Change Password')

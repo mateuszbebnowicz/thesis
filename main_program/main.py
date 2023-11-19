@@ -19,12 +19,18 @@ class MainApp(QMainWindow):
         # Create the stacked widget
         self.stackedWidget = QStackedWidget(self)
         self.setCentralWidget(self.stackedWidget)
-        self.loginWindow = LoginWindow(self.createRegistrationForm, self.createPredictionForm)
+        self.loginWindow = LoginWindow(self.createRegistrationForm, self.createPredictionForm, self.setUser)
         self.stackedWidget.addWidget(self.loginWindow)
         self.stackedWidget.setCurrentWidget(self.loginWindow)
 
+    def setUser(self, user):
+        self.currentUser = user
+
+    def clearUser(self):
+        self.currentUser = None
+
     def createLoginForm(self):
-        loginWindow = LoginWindow(self.createRegistrationForm, self.createPredictionForm)
+        loginWindow = LoginWindow(self.createRegistrationForm, self.createPredictionForm, self.setUser)
         self.stackedWidget.addWidget(loginWindow)
         self.stackedWidget.setCurrentWidget(loginWindow)
         self.removeAllExcept(loginWindow)
@@ -36,13 +42,13 @@ class MainApp(QMainWindow):
         self.removeAllExcept(registrationWindow)
 
     def createPredictionForm(self):
-        predictionWindow = PredictionWindow(self.showAccountForm, self.createLoginForm)
+        predictionWindow = PredictionWindow(self.createAccountForm, self.createLoginForm, self.clearUser)
         self.stackedWidget.addWidget(predictionWindow)
         self.stackedWidget.setCurrentWidget(predictionWindow)
         self.removeAllExcept(predictionWindow)
 
-    def showAccountForm(self):
-        accountWindow = AccountWindow(self.createLoginForm, self.createPredictionForm)
+    def createAccountForm(self):
+        accountWindow = AccountWindow(self.createLoginForm, self.createPredictionForm, self.clearUser, self.currentUser)
         self.stackedWidget.addWidget(accountWindow)
         self.stackedWidget.setCurrentWidget(accountWindow)
         self.removeAllExcept(accountWindow)

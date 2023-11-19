@@ -4,10 +4,11 @@ from dataBase.dataBaseAPI import loginAttempt
 
 
 class LoginWindow(QWidget):
-    def __init__(self, switchToRegisterCallback, switchToPredictionCallback):
+    def __init__(self, switchToRegisterCallback, switchToPredictionCallback, getUserID):
         super().__init__()
         self.switchToRegisterCallback = switchToRegisterCallback
         self.switchToPredictionCallback = switchToPredictionCallback
+        self.getUserID = getUserID
         self.layoutCreator = layoutCreator()
         self.initUI()
 
@@ -33,7 +34,7 @@ class LoginWindow(QWidget):
 
         userID = loginAttempt(username, password)
         if userID is not None:
-            self.userID = userID
+            self.getUserID(userID)
             self.switchToPredictionCallback()
         else:
             QMessageBox.warning(self, 'Login Failed', 'Invalid username or password.')

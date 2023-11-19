@@ -5,12 +5,12 @@ def dbConnection():
     return sqlite3.connect('diabetesPredictionApp.db')
 
 
-def createUser(username, passwordHash, email, age):
+def createUser(username, passwordHash, email):
     conn = dbConnection()
     cursor = conn.cursor()
     print(f"User created Username: {username}, Email: {email}")
-    cursor.execute("INSERT INTO Users (Username, PasswordHash, Email, Age) VALUES (?, ?, ?, ?)",
-                   (username, passwordHash, email, age))
+    cursor.execute("INSERT INTO Users (Username, PasswordHash, Email) VALUES (?, ?, ?)",
+                   (username, passwordHash, email))
 
     conn.commit()
     conn.close()
@@ -43,15 +43,15 @@ def storePrediction(userId, dataInput, predictionResult):
     conn.close()
 
 
-def getUserData(username):
+def getUserData(userID):
     conn = dbConnection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM Users WHERE Username = ?", (username,))
-    user_data = cursor.fetchone()
+    cursor.execute("SELECT * FROM Users WHERE UserID = ?", (userID,))
+    userData = cursor.fetchone()
 
     conn.close()
-    return user_data
+    return userData
 
 
 def getPastResults(userId):
