@@ -1,6 +1,6 @@
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QIntValidator, QDoubleValidator
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QLineEdit, QPushButton, QFrame, QSpacerItem, QSizePolicy, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QComboBox, QLabel, QHBoxLayout, QLineEdit, QPushButton, QFrame, QSpacerItem, QSizePolicy, QVBoxLayout
 from dataBase.dataBaseAPI import getUserData
 
 
@@ -180,15 +180,34 @@ class layoutCreator(QWidget):
         predictionTitleLabel.setFont(QFont('Arial', 16))
         widgetContainer.addWidget(predictionTitleLabel)
 
-        # Input fields
-        inputFieldsName = ['gender', 'age', 'hypertension', 'heart disease,smoking history', 'bmi', 'HbA1c level', 'blood glucose level']
-        inputFields = []
-        for i in range(len(inputFieldsName)):
-            inputName = QLabel(inputFieldsName[i])
-            widgetContainer.addWidget(inputName)
-            lineEdit = QLineEdit(self)
-            inputFields.append(lineEdit)
-            widgetContainer.addWidget(lineEdit)
+        # Dictionary to store input fields
+        inputFields = {}
+
+        # Input Fields
+        fieldNames = ['Gender', 'Age', 'Hypertension', 'Heart Disease', 'Smoking History', 'BMI', 'HbA1c Level', 'Blood Glucose Level']
+        for fieldName in fieldNames:
+            label = QLabel(fieldName)
+            label.setFont(QFont('Arial', 10))
+            widgetContainer.addWidget(label)
+
+            if fieldName in ['Gender', 'Smoking History', 'Hypertension', 'Heart Disease']:
+                comboBox = QComboBox(self)
+                if fieldName == 'Gender':
+                    comboBox.addItems(['Female', 'Male'])
+                elif fieldName == 'Smoking History':
+                    comboBox.addItems(['never', 'current', 'ever', 'former', 'not current', 'No Info'])
+                else:  # Hypertension or Heart Disease
+                    comboBox.addItems(['Have', 'Don\'t Have'])
+                inputFields[fieldName] = comboBox
+                widgetContainer.addWidget(comboBox)
+            else:
+                lineEdit = QLineEdit(self)
+                if fieldName == 'Age':
+                    lineEdit.setValidator(QIntValidator(0, 150))  # Assuming age range 0-150
+                elif fieldName in ['BMI', 'HbA1c Level', 'Blood Glucose Level']:
+                    lineEdit.setValidator(QDoubleValidator(0.00, 999.99, 2))  # Adjust range and precision as needed
+                inputFields[fieldName] = lineEdit
+                widgetContainer.addWidget(lineEdit)
 
         # Predict button
         predictButton = QPushButton('Predict', self)
@@ -309,5 +328,6 @@ class layoutCreator(QWidget):
         return {
                 'layout': mainLayout,
                 'predictionWindowButton': predictonWindowButton,
-                'logoutButton': logoutButton
+                'logoutButton': logoutButton,
+                'changePasswordButton': changePasswordButton
         }

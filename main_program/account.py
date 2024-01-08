@@ -1,5 +1,6 @@
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QMessageBox
 from layout import layoutCreator
+from dataBase.dataBaseAPI import generate_reset_token, getUserEmail
 
 
 class AccountWindow(QWidget):
@@ -18,9 +19,22 @@ class AccountWindow(QWidget):
         layoutDict = self.layoutCreator.createAccountLayout(self.userID)
 
         self.layout = layoutDict['layout']
+        self.resetPasswordButton = layoutDict['changePasswordButton']
         self.predictionWindowButton = layoutDict['predictionWindowButton']
         self.logoutButton = layoutDict['logoutButton']
         self.setLayout(self.layout)
 
+        self.resetPasswordButton.clicked.connect(self.onResetPasswordClicked)
         self.logoutButton.clicked.connect(lambda: (self.clearUser(), self.switchToLoginCallback()))
         self.predictionWindowButton.clicked.connect(self.switchToPredictCallback)
+
+    def onResetPasswordClicked(self):
+        if self.userID:
+            email = getUserEmail(self.userID)
+            if email:
+                response = generate_reset_token(email)
+                QMessageBox.information(self, 'Password Reset', response)
+            else:
+                QMessageBox.warning(self, 'Error', 'Email not found for the user.')
+        else:
+            QMessageBox.warning(self, 'Error', 'No user is currently logged in.')

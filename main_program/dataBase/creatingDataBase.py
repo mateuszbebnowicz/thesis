@@ -1,23 +1,28 @@
 import sqlite3
 
 # Connect to the database file (it will be created if it doesn't exist)
-conn = sqlite3.connect('diabetesPredictionApp.db')
+conn = sqlite3.connect("diabetesPredictionApp.db")
 
 # Create a cursor object using the cursor() method
 cursor = conn.cursor()
 
 # Create tables
-cursor.execute('''
+cursor.execute(
+    """
 CREATE TABLE IF NOT EXISTS Users (
     UserID INTEGER PRIMARY KEY AUTOINCREMENT,
     Username TEXT NOT NULL UNIQUE,
-    PasswordHash TEXT NOT NULL,
+    PasswordHash VARCHAR(128) NOT NULL,
     Email TEXT NOT NULL UNIQUE,
-    Age INTEGER
+    Age INTEGER,
+    ResetToken TEXT,
+    TokenExpiry TIMESTAMP
 )
-''')
+"""
+)
 
-cursor.execute('''
+cursor.execute(
+    """
 CREATE TABLE IF NOT EXISTS Predictions (
     PredictionID INTEGER PRIMARY KEY AUTOINCREMENT,
     UserID INTEGER,
@@ -26,7 +31,9 @@ CREATE TABLE IF NOT EXISTS Predictions (
     PredictionResult TEXT,
     FOREIGN KEY (UserID) REFERENCES Users(UserID)
 )
-''')
+"""
+)
+
 
 # Commit the changes
 conn.commit()
