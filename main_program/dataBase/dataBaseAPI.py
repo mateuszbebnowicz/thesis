@@ -3,6 +3,9 @@ import random
 import string
 import datetime
 import bcrypt
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 
 def dbConnection():
@@ -18,6 +21,20 @@ def hash_password(password):
     hashed_password = bcrypt.hashpw(password_bytes, salt)
 
     return hashed_password
+
+
+def isTokenValid(token):
+    with dbConnection() as conn:
+        cursor = conn.cursor()
+
+        # Checking if the token exists in the database and is not expired
+        cursor.execute(
+            "SELECT UserID FROM Users WHERE ResetToken = ? AND TokenExpiry > ?",
+            (token, datetime.datetime.now()),
+        )
+        result = cursor.fetchone()
+
+        return result is not None
 
 
 def check_password(hashed_password, user_password):
@@ -47,33 +64,54 @@ def generate_reset_token(email):
         "UPDATE Users SET ResetToken = ?, TokenExpiry = ? WHERE email = ?",
         (token, expiration_time, email),
     )
+    conn.commit()
 
-    # Here you should add code to send the email with the token
-    response = "Reset token was sent to your email"
-    return response
+    # Send the email with the token
+    send_reset_email(email, token)
 
 
-def reset_password(token, new_password):
-    conn = dbConnection()
-    cursor = conn.cursor()
-    # Validate the token
-    conn.execute(
-        "SELECT id FROM Users WHERE reset_token = ? AND reset_token_expiry > NOW()",
-        (token,),
-    )
-    user = cursor.fetchone()
+def send_reset_email(email, token):
+    smtp_server = "smtp.gmail.com"
+    smtp_port = 587  # Use 465 for SSL
+    smtp_user = "diabetespredictorpassreset@gmail.com"  # Your Gmail address
+    smtp_password = "eage krqg hmit juzg"  # Your Gmail password or App Password
 
-    if not user:
-        return "Invalid or expired token"
-    # Update the user's password
-    hashed_password = hash_password(new_password)
+    msg = MIMEMultipart()
+    msg["From"] = smtp_user
+    msg["To"] = email
+    msg["Subject"] = "Password Reset Request"
 
-    conn.execute(
-        "UPDATE Users SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE reset_token = ?",
-        (hashed_password, token),
-    )
+    body = f"Your password reset token is: {token}\nPlease use this token to reset your password."
+    msg.attach(MIMEText(body, "plain"))
 
-    return "Password reset successfully"
+    try:
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()  # Start TLS encryption
+        server.login(smtp_user, smtp_password)
+        server.send_message(msg)
+        server.quit()
+        return "Email sent successfully."
+    except Exception as e:
+        print(f"Failed to send email: {e}")  # Log or print the exception
+        return f"Failed to send email: {e}"
+
+
+def reset_password_in_db(token, new_password):
+    hashed_password = hash_password(new_password).decode("utf-8")
+
+    with dbConnection() as conn:
+        cursor = conn.cursor()
+
+        # Update the user's password and clear the reset token and expiry
+        cursor.execute(
+            "UPDATE Users SET PasswordHash = ?, ResetToken = NULL, TokenExpiry = NULL WHERE ResetToken = ?",
+            (hashed_password, token),
+        )
+        affected_rows = cursor.rowcount
+
+        conn.commit()
+
+        return affected_rows > 0  # Returns True if the password was successfully reset
 
 
 def createUser(username, password, email):
