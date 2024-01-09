@@ -3,7 +3,8 @@ from PyQt5.QtWidgets import (
     QMessageBox,
 )
 from layout import layoutCreator
-from dataBase.dataBaseAPI import createUser, userExists
+from dataBase.dataBaseAPI import createUser, getUserByEmail
+from security import hashPassword
 
 
 class RegistrationWindow(QWidget):
@@ -18,13 +19,13 @@ class RegistrationWindow(QWidget):
 
         layoutDict = self.layoutCreator.createRegisterLayout()
 
-        self.layout = layoutDict['layout']
-        self.loginButton = layoutDict['loginButton']
-        self.registerButton = layoutDict['registerButton']
-        self.usernameEdit = layoutDict['usernameEdit']
-        self.passwordEdit = layoutDict['passwordEdit']
-        self.emailEdit = layoutDict['emailEdit']
-        self.passwordRepeatEdit = layoutDict['passwordRepeatEdit']
+        self.layout = layoutDict["layout"]
+        self.loginButton = layoutDict["loginButton"]
+        self.registerButton = layoutDict["registerButton"]
+        self.usernameEdit = layoutDict["usernameEdit"]
+        self.passwordEdit = layoutDict["passwordEdit"]
+        self.emailEdit = layoutDict["emailEdit"]
+        self.passwordRepeatEdit = layoutDict["passwordRepeatEdit"]
         self.setLayout(self.layout)
 
         # Connect the register button to the register function
@@ -47,9 +48,17 @@ class RegistrationWindow(QWidget):
             return
 
         # Check if the user already exists
-        if userExists(username, email):
-            QMessageBox.warning(self, "Register", "User with the same username or email already registered.")
+        if getUserByEmail(username, email):
+            QMessageBox.warning(
+                self,
+                "Register",
+                "User with the same username or email already registered.",
+            )
             return
-        if (createUser(username, password, email)):
+        # Hash the password before storing it
+        hashedPassword = hashPassword(password)
+        hashedPassword_str = hashedPassword.decode("utf-8")
+
+        if createUser(username, hashedPassword_str, email):
             QMessageBox.information(self, "Register", "Registration successful.")
             self.switchToLoginCallback()

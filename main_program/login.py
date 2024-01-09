@@ -1,14 +1,14 @@
 from PyQt5.QtWidgets import QWidget, QMessageBox
 from layout import layoutCreator
-from dataBase.dataBaseAPI import loginAttempt
+from security import loginAttempt
 
 
 class LoginWindow(QWidget):
-    def __init__(self, switchToRegisterCallback, switchToPredictionCallback, getUserID):
+    def __init__(self, switchToRegisterCallback, switchToPredictionCallback, setCurrentUser):
         super().__init__()
         self.switchToRegisterCallback = switchToRegisterCallback
         self.switchToPredictionCallback = switchToPredictionCallback
-        self.getUserID = getUserID
+        self.setCurrentUser = setCurrentUser
         self.layoutCreator = layoutCreator()
         self.initUI()
 
@@ -34,7 +34,7 @@ class LoginWindow(QWidget):
 
         userID = loginAttempt(username, password)
         if userID is not None:
-            self.getUserID(userID)
+            self.setCurrentUser(userID)
             self.switchToPredictionCallback()
         else:
             QMessageBox.warning(self, 'Login Failed', 'Invalid username or password.')

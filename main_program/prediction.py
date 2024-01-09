@@ -3,14 +3,16 @@ from layout import layoutCreator
 import pandas as pd
 import numpy as np
 from joblib import load
+from dataBase.dataBaseAPI import insertPredictions
 
 
 class PredictionWindow(QWidget):
-    def __init__(self, switchToAccountCallback, switchToLoginCallback, clearUser):
+    def __init__(self, switchToAccountCallback, switchToLoginCallback, clearCurrentUser, userID):
         super().__init__()
         self.switchToAccountCallback = switchToAccountCallback
         self.switchToLoginCallback = switchToLoginCallback
-        self.clearUser = clearUser
+        self.clearCurrentUser = clearCurrentUser
+        self.userID = userID
         self.layoutCreator = layoutCreator()
         self.initUI()
 
@@ -27,30 +29,14 @@ class PredictionWindow(QWidget):
         self.setLayout(self.layout)
 
         self.accountButton.clicked.connect(self.switchToAccountCallback)
-        self.logoutButton.clicked.connect(lambda: (self.clearUser(), self.switchToLoginCallback()))
+        self.logoutButton.clicked.connect(lambda: (self.clearCurrentUser(), self.switchToLoginCallback()))
         self.predictButton.clicked.connect(self.predictDiabetes)
 
         self.scaler = load('./model/scaler.joblib')  # Update with the correct path
         self.encoder = load('./model/encoder.joblib')  # Update with the correct path
         self.model = load('./model/diabetes_prediction_model.joblib')  # Update with the correct path
 
-    def get_validated_input(self, field_name, data_type, validator):
-        input_text = self.inputFields[field_name].text()
-        if input_text and validator(input_text):
-            return data_type(input_text)
-        else:
-            QMessageBox.warning(self, 'Invalid Input', f'Please enter a valid value for {field_name}.')
-            return None
-
     def predictDiabetes(self):
-        # Function to check if input is a valid float
-        def is_valid_float(input_str):
-            try:
-                float(input_str)
-                return True
-            except ValueError:
-                return False
-
         # Collecting and validating input data
         try:
             age = int(self.inputFields['Age'].text())
@@ -76,14 +62,6 @@ class PredictionWindow(QWidget):
             'gender': [gender],
             'smoking_history': [smoking_history]
         })
-
-        # def perform_one_hot_encoding(df, column_name):
-        #     dummies = pd.get_dummies(df[column_name], prefix=column_name)
-        #     return pd.concat([df.drop(column_name, axis=1), dummies], axis=1)
-
-        # # Perform one-hot encoding on 'gender' and 'smoking_history'
-        # input_data = perform_one_hot_encoding(input_data, 'gender')
-        # input_data = perform_one_hot_encoding(input_data, 'smoking_history')
         print(input_data)
         # Apply preprocessing
         input_data_scaled = self.scaler.transform(input_data[['age', 'bmi', 'HbA1c_level', 'blood_glucose_level', 'hypertension', 'heart_disease']])
@@ -96,3 +74,4 @@ class PredictionWindow(QWidget):
         prediction = self.model.predict(final_input_data)
         prediction_text = 'May have diabetes' if prediction[0] == 1 else 'Unlikely to have diabetes'
         QMessageBox.information(self, 'Prediction Result', f'Prediction: {prediction_text}')
+        insertPredictions(self.userID, final_input_data, prediction_text)
