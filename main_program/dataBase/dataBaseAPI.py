@@ -1,5 +1,6 @@
 import sqlite3
 import datetime
+import json
 
 
 def dbConnection():
@@ -70,11 +71,27 @@ def getUserEmail(userID):
 def getPreditions(userID):
     with dbConnection() as conn:
         cursor = conn.cursor()
-
-        cursor.execute("SELECT * FROM Predictions WHERE UserID = ?", (userID,))
+        cursor.execute("SELECT PredictionDate, Age, Bmi, Hba1cLevel, BloodGlucoseLevel, PredictionResult FROM Predictions WHERE UserID = ?", (userID,))
         predictions = cursor.fetchall()
 
-        return predictions
+        predictionDates = []
+        ages = []
+        bmis = []
+        hba1c_levels = []
+        blood_glucose_levels = []
+        predictionResults = []
+
+        for prediction in predictions:
+            predictionDate, age, bmi, hba1c_level, blood_glucose_level, predictionResult = prediction
+
+            predictionDates.append(predictionDate)
+            ages.append(age)
+            bmis.append(bmi)
+            hba1c_levels.append(hba1c_level)
+            blood_glucose_levels.append(blood_glucose_level)
+            predictionResults.append(predictionResult)
+
+        return predictionDates, ages, bmis, hba1c_levels, blood_glucose_levels, predictionResults
 
 
 def getUserByEmail(username, email):
@@ -130,13 +147,13 @@ def createUser(username, password, email):
         return True
 
 
-def insertPredictions(userId, dataInput, predictionResult):
+def insertPredictions(userId, age, bmi, hba1c_level, blood_glucose_level, predictionResult):
     with dbConnection() as conn:
         cursor = conn.cursor()
 
         cursor.execute(
-            "INSERT INTO Predictions (UserID, DataInput, PredictionResult) VALUES (?, ?, ?)",
-            (userId, dataInput, predictionResult),
+            "INSERT INTO Predictions (UserID, Age, Bmi, Hba1cLevel, BloodGlucoseLevel, PredictionResult) VALUES (?, ?, ?, ?, ?, ?)",
+            (userId, age, bmi, hba1c_level, blood_glucose_level, predictionResult),
         )
 
         conn.commit()

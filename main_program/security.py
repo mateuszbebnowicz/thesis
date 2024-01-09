@@ -38,15 +38,16 @@ def generateResetToken():
 
 
 def loginAttempt(username, password):
-    userID, hashedPassword = getUserIDPasswordByUsername(username)
-    if userID:
-        # Ensure hashedPassword is in byte format for bcrypt comparison
-        hashedPasswordBytes = hashedPassword.encode("utf-8")
-        # Convert the provided password to bytes
-        passwordBytes = password.encode("utf-8")
-        # Use bcrypt to compare the provided password with the hashed password
-        if bcrypt.checkpw(passwordBytes, hashedPasswordBytes):
-            return userID
+    if getUserIDPasswordByUsername(username):
+        userID, hashedPassword = getUserIDPasswordByUsername(username)
+        if userID:
+            # Ensure hashedPassword is in byte format for bcrypt comparison
+            hashedPasswordBytes = hashedPassword.encode("utf-8")
+            # Convert the provided password to bytes
+            passwordBytes = password.encode("utf-8")
+            # Use bcrypt to compare the provided password with the hashed password
+            if bcrypt.checkpw(passwordBytes, hashedPasswordBytes):
+                return userID
 
 
 def sendResetEmail(email, token):

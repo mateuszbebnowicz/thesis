@@ -27,7 +27,10 @@ CREATE TABLE IF NOT EXISTS Predictions (
     PredictionID INTEGER PRIMARY KEY AUTOINCREMENT,
     UserID INTEGER,
     PredictionDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    DataInput TEXT, -- JSON string or separate columns for each input feature
+    Age TEXT,
+    Bmi TEXT,
+    Hba1cLevel TEXT,
+    BloodGlucoseLevel TEXT,
     PredictionResult TEXT,
     FOREIGN KEY (UserID) REFERENCES Users(UserID)
 )

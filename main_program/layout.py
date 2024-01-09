@@ -1,7 +1,7 @@
 from PyQt5.QtGui import QFont, QIntValidator, QDoubleValidator
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QComboBox, QLabel, QHBoxLayout, QLineEdit, QPushButton, QFrame, QSpacerItem, QSizePolicy, QVBoxLayout
-from dataBase.dataBaseAPI import getUserData
+from dataBase.dataBaseAPI import getUserData, getPreditions
 
 
 class layoutCreator(QWidget):
@@ -259,6 +259,8 @@ class layoutCreator(QWidget):
         userData = getUserData(userId)
         loginText = userData[1]
         emailText = userData[3]
+        predictionDates, ages, bmis, hba1c_levels, blood_glucose_levels, predictionResults = getPreditions(userId)
+
         # Main layout
         mainLayout = QVBoxLayout()
 
@@ -288,8 +290,10 @@ class layoutCreator(QWidget):
         widgetContainer.addWidget(changePasswordButton)
 
         # Placeholder for previous prediction tests
-        previousPredictionsLabel = QLabel('All previous prediction tests will be listed here')
-        widgetContainer.addWidget(previousPredictionsLabel)
+        for i in range(len(predictionDates)):
+            predictionText = f"{predictionDates[i]} Age: {ages[i]} BMI: {bmis[i]} HbA1c: {hba1c_levels[i]} Glucose: {blood_glucose_levels[i]} Result: {predictionResults[i]}"
+            previousPredictionLabel = QLabel(predictionText)
+            widgetContainer.addWidget(previousPredictionLabel)
 
         # Top right buttons
         predictonWindowButton = QPushButton('Diabetes Predictor', self)
