@@ -74,3 +74,29 @@ def sendResetEmail(email, token):
     except Exception as e:
         print(f"Failed to send email: {e}")  # Log or print the exception
         return f"Failed to send email: {e}"
+
+
+def sendRegistrationConfirmationEmail(email):
+    smtp_server = "smtp.gmail.com"
+    smtp_port = 587  # Use 465 for SSL
+    smtp_user = "diabetespredictorpassreset@gmail.com"  # Your Gmail address
+    smtp_password = "eage krqg hmit juzg"  # Your Gmail password or App Password
+
+    msg = MIMEMultipart()
+    msg["From"] = smtp_user
+    msg["To"] = email
+    msg["Subject"] = "Registration Successful"
+
+    body = "Congratulations! You have successfully registered with our application."
+    msg.attach(MIMEText(body, "plain"))
+
+    try:
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()  # Start TLS encryption
+        server.login(smtp_user, smtp_password)
+        server.send_message(msg)
+        server.quit()
+        return True  # Email sent successfully
+    except Exception as e:
+        print(f"Failed to send email: {e}")  # Log or print the exception
+        return False  # Email failed to send

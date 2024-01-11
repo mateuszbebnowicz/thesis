@@ -330,10 +330,17 @@ class layoutCreator(QWidget):
 
         previousPredictionLabel = QTextEdit()
         previousPredictionLabel.setReadOnly(True)
-        previousPredictionLabel.setFixedSize(500, 200)  
+        previousPredictionLabel.setFixedSize(500, 200)
         # Placeholder for previous prediction tests
         for i in range(len(predictionDates)):
-            predictionText = f"{predictionDates[i]} Age: {ages[i]} BMI: {bmis[i]} HbA1c: {hba1c_levels[i]} Glucose: {blood_glucose_levels[i]} Result: {predictionResults[i]}"
+            predictionText = f"""
+            {predictionDates[i]}
+            Age: {ages[i]}
+            BMI: {bmis[i]}
+            HbA1c: {hba1c_levels[i]}
+            Glucose: {blood_glucose_levels[i]}
+            Result: {predictionResults[i]}
+            """
             previousPredictionLabel.append(predictionText)
 
         widgetContainer.addWidget(previousPredictionLabel)

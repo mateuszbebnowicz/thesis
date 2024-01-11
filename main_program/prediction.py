@@ -103,7 +103,7 @@ class PredictionWindow(QWidget):
         diabetes_probability = probabilities[0][1]  # Probability of the positive class (diabetes)
 
         # Convert probability to percentage
-        diabetes_probability_percent = round((diabetes_probability * 100),2)
+        diabetes_probability_percent = round((diabetes_probability * 100), 2)
         predictionText = (
             "May have diabetes with " + str(diabetes_probability_percent) + '% propabiility' if prediction[0] == 1 else "Unlikely to have diabetes"
         )

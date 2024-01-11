@@ -70,7 +70,16 @@ def getUserEmail(userID):
 def getPreditions(userID):
     with dbConnection() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT PredictionDate, Age, Bmi, Hba1cLevel, BloodGlucoseLevel, PredictionResult FROM Predictions WHERE UserID = ?", (userID,))
+        cursor.execute(
+            """SELECT
+            PredictionDate,
+            Age,
+            Bmi,
+            Hba1cLevel,
+            BloodGlucoseLevel,
+            PredictionResult
+            FROM Predictions
+            WHERE UserID = ?""", (userID,))
         predictions = cursor.fetchall()
 
         predictionDates = []

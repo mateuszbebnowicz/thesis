@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import (
 )
 from layout import layoutCreator
 from dataBase.dataBaseAPI import createUser, getUserByEmail
-from security import hashPassword
+from security import hashPassword, sendRegistrationConfirmationEmail
 
 
 class RegistrationWindow(QWidget):
@@ -32,20 +32,38 @@ class RegistrationWindow(QWidget):
         self.loginButton.clicked.connect(self.switchToLoginCallback)
         self.registerButton.clicked.connect(self.register)
 
-    def register(self):
-        email = self.emailEdit.text()
-        username = self.usernameEdit.text()
-        password = self.passwordEdit.text()
-        passwordRepeat = self.passwordRepeatEdit.text()
-
-        # Basic validation
-        if not (email and username and password):
-            QMessageBox.warning(self, "Register", "All fields are required.")
-            return
-
+    def passwordRequirements(self, email, username, password, passwordRepeat):
         if password != passwordRepeat:
             QMessageBox.warning(self, "Register", "Passwords do not match.")
-            return
+            return False
+
+        # Additional password complexity validation
+        if len(password) < 8:
+            QMessageBox.warning(self, "Register", "Password must be at least 8 characters long.")
+            return False
+
+        if (not any(char.isdigit() for char in password) or
+            not any(char.isupper() for char in password) or
+            not any(char.islower() for char in password) or
+            not any(char in "!@#$%^&*()-_+=" for char in password)):
+            QMessageBox.warning(
+                self,
+                "Register",
+                "Password must contain a mix of uppercase letters, lowercase letters, digits, and special characters."
+            )
+            return False
+
+        # Check for personal information in password
+        if username.lower() in password.lower() or email.split('@')[0].lower() in password.lower():
+            QMessageBox.warning(self, "Register", "Password should not contain your username or email.")
+            return False
+
+        return True
+
+    def requirements(self, email, username, password, passwordRepeat):
+        if not (email and username and password):
+            QMessageBox.warning(self, "Register", "All fields are required.")
+            return False
 
         # Check if the user already exists
         if getUserByEmail(username, email):
@@ -54,11 +72,31 @@ class RegistrationWindow(QWidget):
                 "Register",
                 "User with the same username or email already registered.",
             )
-            return
-        # Hash the password before storing it
-        hashedPassword = hashPassword(password)
-        hashedPassword_str = hashedPassword.decode("utf-8")
+            return False
 
-        if createUser(username, hashedPassword_str, email):
-            QMessageBox.information(self, "Register", "Registration successful.")
-            self.switchToLoginCallback()
+        if not self.passwordRequirements(email, username, password, passwordRepeat):
+            return False
+
+        if sendRegistrationConfirmationEmail(email):
+            QMessageBox.information(self, "Register", "Confiramtion email was sent to you.")
+            return True
+        else:
+            QMessageBox.warning(self, "Register", "Email is not valid")
+            return False
+
+    def register(self):
+        email = self.emailEdit.text()
+        username = self.usernameEdit.text()
+        password = self.passwordEdit.text()
+        passwordRepeat = self.passwordRepeatEdit.text()
+
+        # Password validation
+        if self.requirements(email, username, password, passwordRepeat):
+
+            # Hash the password before storing it
+            hashedPassword = hashPassword(password)
+            hashedPassword_str = hashedPassword.decode("utf-8")
+
+            if createUser(username, hashedPassword_str, email):
+                QMessageBox.information(self, "Register", "Registration successful.")
+                self.switchToLoginCallback()
