@@ -99,8 +99,13 @@ class PredictionWindow(QWidget):
 
         # Make a prediction
         prediction = self.model.predict(finalInputData)
+        probabilities = self.model.predict_proba(finalInputData)
+        diabetes_probability = probabilities[0][1]  # Probability of the positive class (diabetes)
+
+        # Convert probability to percentage
+        diabetes_probability_percent = round((diabetes_probability * 100),2)
         predictionText = (
-            "May have diabetes" if prediction[0] == 1 else "Unlikely to have diabetes"
+            "May have diabetes with " + str(diabetes_probability_percent) + '% propabiility' if prediction[0] == 1 else "Unlikely to have diabetes"
         )
         QMessageBox.information(
             self, "Prediction Result", f"Prediction: {predictionText}"
