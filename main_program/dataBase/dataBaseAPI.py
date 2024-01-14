@@ -22,7 +22,6 @@ def getUserByToken(token):
 
 def getUserIDPasswordByUsername(username):
     with dbConnection() as conn:
-
         cursor = conn.cursor()
 
         # Retrieve the hashed password from the database
@@ -55,7 +54,7 @@ def getUserData(userID):
         return userData
 
 
-def getUserEmail(userID):
+def getEmailByUserID(userID):
     with dbConnection() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT Email FROM Users WHERE UserID = ?", (userID,))
@@ -79,7 +78,9 @@ def getPreditions(userID):
             BloodGlucoseLevel,
             PredictionResult
             FROM Predictions
-            WHERE UserID = ?""", (userID,))
+            WHERE UserID = ?""",
+            (userID,),
+        )
         predictions = cursor.fetchall()
 
         predictionDates = []
@@ -90,7 +91,14 @@ def getPreditions(userID):
         predictionResults = []
 
         for prediction in predictions:
-            predictionDate, age, bmi, hba1c_level, blood_glucose_level, predictionResult = prediction
+            (
+                predictionDate,
+                age,
+                bmi,
+                hba1c_level,
+                blood_glucose_level,
+                predictionResult,
+            ) = prediction
 
             predictionDates.append(predictionDate)
             ages.append(age)
@@ -99,15 +107,34 @@ def getPreditions(userID):
             blood_glucose_levels.append(blood_glucose_level)
             predictionResults.append(predictionResult)
 
-        return predictionDates, ages, bmis, hba1c_levels, blood_glucose_levels, predictionResults
+        return (
+            predictionDates,
+            ages,
+            bmis,
+            hba1c_levels,
+            blood_glucose_levels,
+            predictionResults,
+        )
 
 
-def getUserByEmail(username, email):
+def getUserByUsernameOrEmail(username, email):
     with dbConnection() as conn:
         cursor = conn.cursor()
 
         cursor.execute(
             "SELECT * FROM Users WHERE Username = ? OR Email = ?", (username, email)
+        )
+        user = cursor.fetchone()
+
+        return user is not None
+
+
+def getUserIDByEmail(email):
+    with dbConnection() as conn:
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "SELECT UserID FROM Users WHERE Email = ?", (email,)
         )
         user = cursor.fetchone()
 
@@ -155,7 +182,9 @@ def createUser(username, password, email):
         return True
 
 
-def insertPredictions(userId, age, bmi, hba1c_level, blood_glucose_level, predictionResult):
+def insertPredictions(
+    userId, age, bmi, hba1c_level, blood_glucose_level, predictionResult
+):
     with dbConnection() as conn:
         cursor = conn.cursor()
 

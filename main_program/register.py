@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import (
     QMessageBox,
 )
 from layout import layoutCreator
-from dataBase.dataBaseAPI import createUser, getUserByEmail
+from dataBase.dataBaseAPI import createUser, getUserByUsernameOrEmail
 from security import hashPassword, sendRegistrationConfirmationEmail
 
 
@@ -39,23 +39,22 @@ class RegistrationWindow(QWidget):
 
         # Additional password complexity validation
         if len(password) < 8:
-            QMessageBox.warning(self, "Register", "Password must be at least 8 characters long.")
-            return False
-
-        if (not any(char.isdigit() for char in password) or
-            not any(char.isupper() for char in password) or
-            not any(char.islower() for char in password) or
-            not any(char in "!@#$%^&*()-_+=" for char in password)):
             QMessageBox.warning(
-                self,
-                "Register",
-                "Password must contain a mix of uppercase letters, lowercase letters, digits, and special characters."
+                self, "Register", "Password must be at least 8 characters long."
             )
             return False
 
-        # Check for personal information in password
-        if username.lower() in password.lower() or email.split('@')[0].lower() in password.lower():
-            QMessageBox.warning(self, "Register", "Password should not contain your username or email.")
+        if (
+            not any(char.isdigit() for char in password)
+            or not any(char.isupper() for char in password)
+            or not any(char.islower() for char in password)
+            or not any(char in "!@#$%^&*()-_+=" for char in password)
+        ):
+            QMessageBox.warning(
+                self,
+                "Register",
+                "Password must contain a mix of uppercase letters, lowercase letters, digits, and special characters.",
+            )
             return False
 
         return True
@@ -66,7 +65,7 @@ class RegistrationWindow(QWidget):
             return False
 
         # Check if the user already exists
-        if getUserByEmail(username, email):
+        if getUserByUsernameOrEmail(username, email):
             QMessageBox.warning(
                 self,
                 "Register",
@@ -78,7 +77,9 @@ class RegistrationWindow(QWidget):
             return False
 
         if sendRegistrationConfirmationEmail(email):
-            QMessageBox.information(self, "Register", "Confiramtion email was sent to you.")
+            QMessageBox.information(
+                self, "Register", "Confiramtion email was sent to you."
+            )
             return True
         else:
             QMessageBox.warning(self, "Register", "Email is not valid")
@@ -92,7 +93,6 @@ class RegistrationWindow(QWidget):
 
         # Password validation
         if self.requirements(email, username, password, passwordRepeat):
-
             # Hash the password before storing it
             hashedPassword = hashPassword(password)
             hashedPassword_str = hashedPassword.decode("utf-8")

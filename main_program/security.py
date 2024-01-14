@@ -5,7 +5,14 @@ import datetime
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from dataBase.dataBaseAPI import getUserIDPasswordByUsername
+from dataBase.dataBaseAPI import (
+    getUserIDPasswordByUsername,
+    setResetToken,
+    getUserByToken,
+    getEmailByUserID,
+    setNewPassword,
+)
+from PyQt5.QtWidgets import QLineEdit, QInputDialog, QMessageBox
 
 
 def check_password(hashedPassword, user_password):
@@ -35,6 +42,62 @@ def generateResetToken():
     expirationTime = datetime.datetime.now() + datetime.timedelta(hours=24)
 
     return token, expirationTime
+
+
+def resetPasswordProcedure(parent, userID):
+    if userID:
+        token, expirationTime = generateResetToken()
+        setResetToken(userID, token, expirationTime)
+        email = getEmailByUserID(userID)
+        # Send the email with the token
+        if sendResetEmail(email, token):
+            imputedToken, ok = QInputDialog.getText(
+                parent,
+                "Password Reset",
+                "Password token was sent to your email \nEnter the reset token:",
+            )
+            if ok and imputedToken:
+                openChangePasswordDialog(parent, imputedToken)
+    else:
+        QMessageBox.warning(parent, "Error", "No user is currently logged in.")
+
+
+def verifyToken(parent, token):
+    # Verify if the token is valid
+    # If valid, open the change password dialog
+    if getUserByToken(token):
+        return True
+    else:
+        QMessageBox.warning(parent, "Error", "Invalid or expired token.")
+        return False
+
+
+def openChangePasswordDialog(parent, token):
+    if verifyToken(parent, token):
+        # Open a dialog to change the password
+        newPassword, ok = QInputDialog.getText(
+            parent, "Password Reset", "Enter your new password:", QLineEdit.Password
+        )
+        if ok and newPassword:
+            confirmNewPassword, ok = QInputDialog.getText(
+                parent,
+                "Password Reset",
+                "Confirm your new password:",
+                QLineEdit.Password,
+            )
+            if ok and newPassword == confirmNewPassword:
+                response = resetPassword(token, newPassword)
+                QMessageBox.information(parent, "Password Reset", response)
+            else:
+                QMessageBox.warning(parent, "Error", "Passwords do not match.")
+
+
+def resetPassword(token, newPassword):
+    hashedPassword = hashPassword(newPassword).decode("utf-8")
+    if setNewPassword(token, hashedPassword):
+        return "Password reset successfully."
+    else:
+        return "Failed to reset password. Please try again."
 
 
 def loginAttempt(username, password):
@@ -70,10 +133,10 @@ def sendResetEmail(email, token):
         server.login(smtp_user, smtp_password)
         server.send_message(msg)
         server.quit()
-        return "Email sent successfully."
+        return True
     except Exception as e:
         print(f"Failed to send email: {e}")  # Log or print the exception
-        return f"Failed to send email: {e}"
+        return False
 
 
 def sendRegistrationConfirmationEmail(email):

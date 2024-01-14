@@ -1,5 +1,5 @@
 from PyQt5.QtGui import QFont, QIntValidator, QDoubleValidator
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (
     QWidget,
     QTextEdit,
@@ -14,6 +14,16 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
 )
 from dataBase.dataBaseAPI import getUserData, getPreditions
+
+
+class ClickableLabel(QLabel):
+    clicked = pyqtSignal()  # Define a custom signal
+
+    def __init__(self, parent=None):
+        super(ClickableLabel, self).__init__(parent)
+
+    def mousePressEvent(self, event):
+        self.clicked.emit()
 
 
 class layoutCreator(QWidget):
@@ -57,8 +67,10 @@ class layoutCreator(QWidget):
         loginButton.setFont(QFont("Arial", 11))
         widgetContainer.addWidget(loginButton)
 
-        forgotPasswordLabel = QLabel("Forgot password?")
+        forgotPasswordLabel = ClickableLabel("Forgot password?")
         forgotPasswordLabel.setAlignment(Qt.AlignCenter)
+        forgotPasswordLabel.setStyleSheet("color: blue; text-decoration: underline;")
+        forgotPasswordLabel.setCursor(Qt.PointingHandCursor)
         widgetContainer.addWidget(forgotPasswordLabel)
 
         # Horizontal line
@@ -92,6 +104,7 @@ class layoutCreator(QWidget):
             "registerButton": registerButton,
             "usernameEdit": usernameEdit,
             "passwordEdit": passwordEdit,
+            "forgotPasswordLabel": forgotPasswordLabel,
         }
 
     def createRegisterLayout(self):
