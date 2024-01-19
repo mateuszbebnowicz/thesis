@@ -58,6 +58,10 @@ def resetPasswordProcedure(parent, userID):
             )
             if ok and imputedToken:
                 openChangePasswordDialog(parent, imputedToken)
+            else:
+                QMessageBox.warning(parent, "Error", "Password reset was not succesful")
+        else:
+            QMessageBox.warning(parent, "Error", "Email was not send")
     else:
         QMessageBox.warning(parent, "Error", "No user is currently logged in.")
 
@@ -101,16 +105,16 @@ def resetPassword(token, newPassword):
 
 
 def loginAttempt(username, password):
-    if getUserIDPasswordByUsername(username):
-        userID, hashedPassword = getUserIDPasswordByUsername(username)
-        if userID:
-            # Ensure hashedPassword is in byte format for bcrypt comparison
-            hashedPasswordBytes = hashedPassword.encode("utf-8")
-            # Convert the provided password to bytes
-            passwordBytes = password.encode("utf-8")
-            # Use bcrypt to compare the provided password with the hashed password
-            if bcrypt.checkpw(passwordBytes, hashedPasswordBytes):
-                return userID
+    userID, hashedPassword = getUserIDPasswordByUsername(username)
+    if userID:
+        # Ensure hashedPassword is in byte format for bcrypt comparison
+        hashedPasswordBytes = hashedPassword.encode("utf-8")
+        # Convert the provided password to bytes
+        passwordBytes = password.encode("utf-8")
+        # Use bcrypt to compare the provided password with the hashed password
+        if bcrypt.checkpw(passwordBytes, hashedPasswordBytes):
+            return userID
+    return False
 
 
 def sendResetEmail(email, token):
@@ -159,7 +163,7 @@ def sendRegistrationConfirmationEmail(email):
         server.login(smtp_user, smtp_password)
         server.send_message(msg)
         server.quit()
-        return True  # Email sent successfully
+        return True  # email sent successfully
     except Exception as e:
         print(f"Failed to send email: {e}")  # Log or print the exception
-        return False  # Email failed to send
+        return False  # email failed to send

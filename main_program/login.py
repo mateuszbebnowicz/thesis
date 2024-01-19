@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QMessageBox, QInputDialog
-from layout import layoutCreator
+from layout import LayoutCreator
 from security import loginAttempt, resetPasswordProcedure
 from dataBase.dataBaseAPI import getUserIDByEmail
 
@@ -12,7 +12,7 @@ class LoginWindow(QWidget):
         self.switchToRegisterCallback = switchToRegisterCallback
         self.switchToPredictionCallback = switchToPredictionCallback
         self.setCurrentUser = setCurrentUser
-        self.layoutCreator = layoutCreator()
+        self.layoutCreator = LayoutCreator()
         self.initUI()
 
     def initUI(self):
@@ -38,7 +38,7 @@ class LoginWindow(QWidget):
         if userID:
             resetPasswordProcedure(self, userID)
         else:
-            QMessageBox.warning(self, "Error", "Email not found.")
+            QMessageBox.warning(self, "Error", "email not found.")
 
     def getUserIDFromImputedEmail(self):
         email, ok = QInputDialog.getText(

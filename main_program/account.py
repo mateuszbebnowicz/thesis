@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QWidget
-from layout import layoutCreator
+from layout import LayoutCreator
 from security import resetPasswordProcedure
 
 
@@ -12,7 +12,7 @@ class AccountWindow(QWidget):
         self.switchToLoginCallback = switchToLoginCallback
         self.clearCurrentUser = clearCurrentUser
         self.userID = userId
-        self.layoutCreator = layoutCreator()
+        self.layoutCreator = LayoutCreator()
         self.initUI()
 
     def initUI(self):

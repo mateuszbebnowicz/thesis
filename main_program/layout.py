@@ -26,7 +26,7 @@ class ClickableLabel(QLabel):
         self.clicked.emit()
 
 
-class layoutCreator(QWidget):
+class LayoutCreator(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -40,12 +40,12 @@ class layoutCreator(QWidget):
         # Main layout
         mainLayout = QVBoxLayout()
 
-        # Create a horizontal layout with spacers to center the widgets horizontally
+        # Creating a horizontal layout with spacers to center the widgets horizontally
         hLayout = QHBoxLayout()
         leftSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         rightSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        # Add your widgets here
+        # Adding widgets
         widgetContainer = QVBoxLayout()
 
         widgetContainer.addWidget(self.titleLabel)
@@ -84,16 +84,16 @@ class layoutCreator(QWidget):
         registerButton.setFont(QFont("Arial", 11))
         widgetContainer.addWidget(registerButton)
 
-        # Add the spacers and the widget container to the horizontal layout
+        # Adding the spacers and the widget container to the horizontal layout
         hLayout.addItem(leftSpacer)
         hLayout.addLayout(widgetContainer)
         hLayout.addItem(rightSpacer)
 
-        # Create a vertical layout with spacers to center the widgets vertically
+        # Creating a vertical layout with spacers to center the widgets vertically
         topSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
         bottomSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
-        # Add the spacers and the horizontal layout to the main layout
+        # Adding the spacers and the horizontal layout to the main layout
         mainLayout.addItem(topSpacer)
         mainLayout.addLayout(hLayout)
         mainLayout.addItem(bottomSpacer)
@@ -125,7 +125,7 @@ class layoutCreator(QWidget):
         widgetContainer.addItem(topSpacer)
 
         emailEdit = QLineEdit(self)
-        emailEdit.setPlaceholderText("Email")
+        emailEdit.setPlaceholderText("email")
         widgetContainer.addWidget(emailEdit)
 
         usernameEdit = QLineEdit(self)
@@ -211,13 +211,13 @@ class layoutCreator(QWidget):
         # Input Fields
         fieldNames = [
             "Gender",
-            "Age",
+            "age",
             "Hypertension",
             "Heart Disease",
             "Smoking History",
             "BMI",
-            "HbA1c Level",
-            "Blood Glucose Level",
+            "HbA1c Level in %",
+            "Blood Glucose Level in mg/dL",
         ]
         for fieldName in fieldNames:
             label = QLabel(fieldName)
@@ -243,11 +243,11 @@ class layoutCreator(QWidget):
                 widgetContainer.addWidget(comboBox)
             else:
                 lineEdit = QLineEdit(self)
-                if fieldName == "Age":
+                if fieldName == "age":
                     lineEdit.setValidator(
                         QIntValidator(0, 150)
                     )  # Assuming age range 0-150
-                elif fieldName in ["BMI", "HbA1c Level", "Blood Glucose Level"]:
+                elif fieldName in ["BMI", "HbA1c Level in %", "Blood Glucose Level in mg/dL"]:
                     lineEdit.setValidator(
                         QDoubleValidator(0.00, 999.99, 2)
                     )  # Adjust range and precision as needed
@@ -331,7 +331,7 @@ class layoutCreator(QWidget):
 
         # Add widgets for user information
         loginLabel = QLabel("Login: " + loginText)
-        emailLabel = QLabel("Email: " + emailText)
+        emailLabel = QLabel("email: " + emailText)
 
         # Add widgets to layout
         widgetContainer.addWidget(loginLabel)
@@ -348,7 +348,7 @@ class layoutCreator(QWidget):
         for i in range(len(predictionDates)):
             predictionText = f"""
             {predictionDates[i]}
-            Age: {ages[i]}
+            age: {ages[i]}
             BMI: {bmis[i]}
             HbA1c: {hba1c_levels[i]}
             Glucose: {blood_glucose_levels[i]}

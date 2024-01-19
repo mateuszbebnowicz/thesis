@@ -10,13 +10,13 @@ cursor = conn.cursor()
 cursor.execute(
     """
 CREATE TABLE IF NOT EXISTS Users (
-    UserID INTEGER PRIMARY KEY AUTOINCREMENT,
-    Username TEXT NOT NULL UNIQUE,
-    PasswordHash VARCHAR(128) NOT NULL,
-    Email TEXT NOT NULL UNIQUE,
-    Age INTEGER,
-    ResetToken TEXT,
-    TokenExpiry TIMESTAMP
+    userID INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE,
+    passwordHash VARCHAR(128) NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    age INTEGER,
+    resetToken TEXT,
+    tokenExpiry TIMESTAMP
 )
 """
 )
@@ -24,15 +24,15 @@ CREATE TABLE IF NOT EXISTS Users (
 cursor.execute(
     """
 CREATE TABLE IF NOT EXISTS Predictions (
-    PredictionID INTEGER PRIMARY KEY AUTOINCREMENT,
-    UserID INTEGER,
-    PredictionDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Age TEXT,
+    predictionID INTEGER PRIMARY KEY AUTOINCREMENT,
+    userID INTEGER,
+    predictionDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    age TEXT,
     Bmi TEXT,
-    Hba1cLevel TEXT,
-    BloodGlucoseLevel TEXT,
-    PredictionResult TEXT,
-    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+    hba1cLevel TEXT,
+    bloodGlucoseLevel TEXT,
+    predictionResult TEXT,
+    FOREIGN KEY (userID) REFERENCES Users(userID)
 )
 """
 )

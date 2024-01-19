@@ -12,7 +12,7 @@ def getUserByToken(token):
 
         # Checking if the token exists in the database and is not expired
         cursor.execute(
-            "SELECT UserID FROM Users WHERE ResetToken = ? AND TokenExpiry > ?",
+            "SELECT userID FROM Users WHERE resetToken = ? AND tokenExpiry > ?",
             (token, datetime.datetime.now()),
         )
         result = cursor.fetchone()
@@ -26,7 +26,7 @@ def getUserIDPasswordByUsername(username):
 
         # Retrieve the hashed password from the database
         cursor.execute(
-            "SELECT UserID, PasswordHash FROM Users WHERE Username = ?", (username,)
+            "SELECT userID, passwordHash FROM Users WHERE username = ?", (username,)
         )
 
         return cursor.fetchone()
@@ -36,7 +36,7 @@ def getToken(userID):
     with dbConnection() as conn:
         cursor = conn.cursor()
         # Check if user exists
-        cursor.execute("SELECT ResetToken FROM Users WHERE UserID = ?", (userID,))
+        cursor.execute("SELECT resetToken FROM Users WHERE userID = ?", (userID,))
         token = cursor.fetchone()
         if not token:
             return "Token not found"
@@ -48,7 +48,7 @@ def getUserData(userID):
     with dbConnection() as conn:
         cursor = conn.cursor()
 
-        cursor.execute("SELECT * FROM Users WHERE UserID = ?", (userID,))
+        cursor.execute("SELECT * FROM Users WHERE userID = ?", (userID,))
         userData = cursor.fetchone()
 
         return userData
@@ -57,7 +57,7 @@ def getUserData(userID):
 def getEmailByUserID(userID):
     with dbConnection() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT Email FROM Users WHERE UserID = ?", (userID,))
+        cursor.execute("SELECT email FROM Users WHERE userID = ?", (userID,))
         result = cursor.fetchone()
 
         if result:
@@ -71,14 +71,14 @@ def getPreditions(userID):
         cursor = conn.cursor()
         cursor.execute(
             """SELECT
-            PredictionDate,
-            Age,
+            predictionDate,
+            age,
             Bmi,
-            Hba1cLevel,
-            BloodGlucoseLevel,
-            PredictionResult
+            hba1cLevel,
+            bloodGlucoseLevel,
+            predictionResult
             FROM Predictions
-            WHERE UserID = ?""",
+            WHERE userID = ?""",
             (userID,),
         )
         predictions = cursor.fetchall()
@@ -122,7 +122,7 @@ def getUserByUsernameOrEmail(username, email):
         cursor = conn.cursor()
 
         cursor.execute(
-            "SELECT * FROM Users WHERE Username = ? OR Email = ?", (username, email)
+            "SELECT * FROM Users WHERE username = ? OR email = ?", (username, email)
         )
         user = cursor.fetchone()
 
@@ -133,9 +133,7 @@ def getUserIDByEmail(email):
     with dbConnection() as conn:
         cursor = conn.cursor()
 
-        cursor.execute(
-            "SELECT UserID FROM Users WHERE Email = ?", (email,)
-        )
+        cursor.execute("SELECT userID FROM Users WHERE email = ?", (email,))
         user = cursor.fetchone()
 
         return user is not None
@@ -146,7 +144,7 @@ def setResetToken(userID, token, expirationTime):
         cursor = conn.cursor()
         # Store the token and expiration time in the database
         cursor.execute(
-            "UPDATE Users SET ResetToken = ?, TokenExpiry = ? WHERE UserID = ?",
+            "UPDATE Users SET resetToken = ?, tokenExpiry = ? WHERE userID = ?",
             (token, expirationTime, userID),
         )
         conn.commit()
@@ -158,7 +156,7 @@ def setNewPassword(token, newPassword):
 
         # Update the user's password and clear the reset token and expiry
         cursor.execute(
-            "UPDATE Users SET PasswordHash = ?, ResetToken = NULL, TokenExpiry = NULL WHERE ResetToken = ?",
+            "UPDATE Users SET passwordHash = ?, resetToken = NULL, tokenExpiry = NULL WHERE resetToken = ?",
             (newPassword, token),
         )
         affected_rows = cursor.rowcount
@@ -172,9 +170,9 @@ def createUser(username, password, email):
     with dbConnection() as conn:
         cursor = conn.cursor()
 
-        print(f"User created Username: {username}, Email: {email}")
+        print(f"User created username: {username}, email: {email}")
         cursor.execute(
-            "INSERT INTO Users (Username, PasswordHash, Email) VALUES (?, ?, ?)",
+            "INSERT INTO Users (username, passwordHash, email) VALUES (?, ?, ?)",
             (username, password, email),
         )
 
@@ -189,7 +187,7 @@ def insertPredictions(
         cursor = conn.cursor()
 
         cursor.execute(
-            "INSERT INTO Predictions (UserID, Age, Bmi, Hba1cLevel, BloodGlucoseLevel, PredictionResult) VALUES (?, ?, ?, ?, ?, ?)",
+            "INSERT INTO Predictions (userID, age, Bmi, hba1cLevel, bloodGlucoseLevel, predictionResult) VALUES (?, ?, ?, ?, ?, ?)",
             (userId, age, bmi, hba1c_level, blood_glucose_level, predictionResult),
         )
 

@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QMessageBox
-from layout import layoutCreator
+from layout import LayoutCreator
 import pandas as pd
 import numpy as np
 from joblib import load
@@ -15,7 +15,7 @@ class PredictionWindow(QWidget):
         self.switchToLoginCallback = switchToLoginCallback
         self.clearCurrentUser = clearCurrentUser
         self.userID = userID
-        self.layoutCreator = layoutCreator()
+        self.layoutCreator = LayoutCreator()
         self.initUI()
 
     def initUI(self):
@@ -45,10 +45,10 @@ class PredictionWindow(QWidget):
     def predictDiabetes(self):
         # Collecting and validating input data
         try:
-            age = int(self.inputFields["Age"].text())
+            age = int(self.inputFields["age"].text())
             bmi = float(self.inputFields["BMI"].text())
-            hba1c_level = float(self.inputFields["HbA1c Level"].text())
-            blood_glucose_level = float(self.inputFields["Blood Glucose Level"].text())
+            hba1c_level = float(self.inputFields["HbA1c Level in %"].text())
+            blood_glucose_level = float(self.inputFields["Blood Glucose Level in mg/dL"].text())
             hypertension = (
                 1 if self.inputFields["Hypertension"].currentText() == "Have" else 0
             )
@@ -100,14 +100,22 @@ class PredictionWindow(QWidget):
         # Make a prediction
         prediction = self.model.predict(finalInputData)
         probabilities = self.model.predict_proba(finalInputData)
-        diabetes_probability = probabilities[0][1]  # Probability of the positive class (diabetes)
+        diabetes_probability = probabilities[0][
+            1
+        ]  # Probability of the positive class (diabetes)
 
         # Convert probability to percentage
         diabetes_probability_percent = round((diabetes_probability * 100), 2)
         predictionText = (
-            "May have diabetes with " + str(diabetes_probability_percent) + '% propabiility' if prediction[0] == 1 else "Unlikely to have diabetes"
+            "May have diabetes with "
+            + str(diabetes_probability_percent)
+            + "% propabiility"
+            if prediction[0] == 1
+            else "Unlikely to have diabetes"
         )
         QMessageBox.information(
             self, "Prediction Result", f"Prediction: {predictionText}"
         )
-        insertPredictions(self.userID, age, bmi, hba1c_level, blood_glucose_level, predictionText)
+        insertPredictions(
+            self.userID, age, bmi, hba1c_level, blood_glucose_level, predictionText
+        )

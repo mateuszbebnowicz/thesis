@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import (
     QWidget,
     QMessageBox,
 )
-from layout import layoutCreator
+from layout import LayoutCreator
 from dataBase.dataBaseAPI import createUser, getUserByUsernameOrEmail
 from security import hashPassword, sendRegistrationConfirmationEmail
 
@@ -11,7 +11,7 @@ class RegistrationWindow(QWidget):
     def __init__(self, switchToLoginCallback):
         super().__init__()
         self.switchToLoginCallback = switchToLoginCallback
-        self.layoutCreator = layoutCreator()
+        self.layoutCreator = LayoutCreator()
         self.initUI()
 
     def initUI(self):
@@ -32,7 +32,7 @@ class RegistrationWindow(QWidget):
         self.loginButton.clicked.connect(self.switchToLoginCallback)
         self.registerButton.clicked.connect(self.register)
 
-    def passwordRequirements(self, email, username, password, passwordRepeat):
+    def passwordRequirements(self, password, passwordRepeat):
         if password != passwordRepeat:
             QMessageBox.warning(self, "Register", "Passwords do not match.")
             return False
@@ -73,7 +73,7 @@ class RegistrationWindow(QWidget):
             )
             return False
 
-        if not self.passwordRequirements(email, username, password, passwordRepeat):
+        if not self.passwordRequirements(password, passwordRepeat):
             return False
 
         if sendRegistrationConfirmationEmail(email):
@@ -82,7 +82,7 @@ class RegistrationWindow(QWidget):
             )
             return True
         else:
-            QMessageBox.warning(self, "Register", "Email is not valid")
+            QMessageBox.warning(self, "Register", "email is not valid")
             return False
 
     def register(self):
